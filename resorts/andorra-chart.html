@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <link rel="icon" src="../img/favicon.ico">
+</head>
+<body align="center">
+
+    <br><br>
+    <a align="left" href="andorra.html" class="buttonStyle">&lt; Back</a><br><br><br>
+
+    <div id="weatherChartContainer" align="center">
+        <canvas id="weatherChart"></canvas>
+    </div>
+
+    <script>
+        async function fetchWeatherData() {
+            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=42.5428&longitude=1.7336&hourly=temperature_2m,snowfall,snow_depth');
+            const data = await response.json();
+
+            // Extract necessary data
+            const timestamps = data.hourly.time;
+            const temperatures = data.hourly.temperature_2m;
+            const snowfall = data.hourly.snowfall;
+            const snowDepth = data.hourly.snow_depth;
+
+            // Create a Chart.js chart
+            const ctx = document.getElementById('weatherChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line', // Line chart
+                data: {
+                    labels: timestamps, // Timestamps as labels
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: temperatures,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4, // Smooth curve
+                        },
+                        {
+                            label: 'Snowfall (cm)',
+                            data: snowfall,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4, // Smooth curve
+                        },
+                        {
+                            label: 'Snow Depth (cm)',
+                            data: snowDepth,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4, // Smooth curve
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weather Forecast'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time (hourly)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch and render the chart
+        fetchWeatherData();
+    </script>
+</body>
+</html>
